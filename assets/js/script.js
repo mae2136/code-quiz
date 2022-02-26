@@ -138,7 +138,7 @@ function newWindow(timerInterval, secondsLeft) {
     clearInterval(timerInterval);
     // Calls function to create and append image
     timerEl.textContent = " ";
-    window.open("https://github.com/mae2136");
+    window.open("https://mae2136.github.io/code-quiz/");
 }
 // After final question, ask user to input initials
 // Open new page to display score
