@@ -4,6 +4,7 @@ var information = document.querySelector("#information");
 var possibleAnswers = document.querySelector("#answer");
 var answerListDisplay = document.querySelector("#answerList");
 var answerList = document.querySelectorAll("button.answer");
+var timerEl = document.getElementById("timer");
 const messageDiv = document.createElement("div");
 const correct = document.createTextNode("Correct!");
 const lose = document.createTextNode("Wrong!");
@@ -23,6 +24,7 @@ var answers = {
 }
 // Tracks how many questions have been asked.
 var questionCounter;
+var secondsLeft = 60;
 
 console.log(answers);
 
@@ -38,6 +40,18 @@ function startQuiz() {
     answerListDisplay.style.display = "block";
     questionCounter = showQuestion(questionCounter);
     // Start timer (interval) for 60 seconds
+    startTimer(secondsLeft);
+}
+
+function startTimer(secondsLeft) {
+    var timerInterval = setInterval(function() {
+        secondsLeft--;
+        timerEl.textContent = secondsLeft + " seconds left.";
+        // If timer = 0, ask user to input initials with score of 0
+        if(secondsLeft === 0) {
+          newWindow(timerInterval, secondsLeft);
+        }
+    }, 1000); 
 }
 
 // Shows a quiz question based on which question was previously answered
@@ -104,7 +118,11 @@ function checkAnswer(event) {
         messageDiv.appendChild(lose);
     }
     document.getElementById("buttonList").appendChild(messageDiv);
-    questionCounter = showQuestion(questionCounter);
+    if (questionCounter < 5) {
+        questionCounter = showQuestion(questionCounter);
+    } else {
+        newWindow(timerInterval, secondsLeft);
+    }
     // Remove messageDiv after 2 seconds
     setTimeout(removeMessage, 2000);
 }
@@ -115,7 +133,13 @@ function removeMessage() {
     return
 }
 
-// If timer = 0, ask user to input initials with score of 0
+function newWindow(timerInterval, secondsLeft) {
+    // Stops execution of action at set interval
+    clearInterval(timerInterval);
+    // Calls function to create and append image
+    timerEl.textContent = " ";
+    window.open("https://github.com/mae2136");
+}
 // After final question, ask user to input initials
 // Open new page to display score
 // Store score and name in local storage
