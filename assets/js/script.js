@@ -8,6 +8,11 @@ var timerEl = document.getElementById("timer");
 const messageDiv = document.createElement("div");
 const correct = document.createTextNode("Correct!");
 const lose = document.createTextNode("Wrong!");
+var scoreText = document.getElementById("scoreText");
+var storage = {
+    Initials: [],
+    Score: [],
+};
 
 // Array of Question Headers
 var questionHeader = ["Question 1", "Question 2", "Question 3", "Question 4"];
@@ -25,11 +30,19 @@ var answers = {
 // Tracks how many questions have been asked.
 var questionCounter;
 var secondsLeft = 60;
-
-console.log(answers);
+var timerInterval;
 
 // Event Listener for Start Button
 startButton.addEventListener("click", startQuiz);
+
+// Check answer for right or wrong (click eventlistener)
+answerListDisplay.addEventListener("click", checkAnswer);
+
+// Store score and name in local storage
+scoreText.addEventListener("submit", function (event) {
+    event.preventDefault();
+    console.log("Scored", event.target);
+});
 
 // Starts quiz on start button click.
 function startQuiz() {
@@ -40,18 +53,19 @@ function startQuiz() {
     answerListDisplay.style.display = "block";
     questionCounter = showQuestion(questionCounter);
     // Start timer (interval) for 60 seconds
-    startTimer(secondsLeft);
+    secondsLeft = startTimer(secondsLeft);
 }
 
 function startTimer(secondsLeft) {
-    var timerInterval = setInterval(function() {
+    timerInterval = setInterval(function() {
         secondsLeft--;
         timerEl.textContent = secondsLeft + " seconds left.";
         // If timer = 0, ask user to input initials with score of 0
         if(secondsLeft === 0) {
-          newWindow(timerInterval, secondsLeft);
+            score(timerInterval, secondsLeft);
         }
-    }, 1000); 
+    }, 1000);
+    return secondsLeft; 
 }
 
 // Shows a quiz question based on which question was previously answered
@@ -103,44 +117,54 @@ function showQuestion(questionCounter) {
     questionCounter++;
     return questionCounter;
 }
-// Check answer for right or wrong (click eventlistener)
-answerListDisplay.addEventListener("click", checkAnswer);
 
-// Reduce timer by 10 seconds if answer is incorrect
 // Proceed to the next each question regardless of answer
 function checkAnswer(event) {
-    console.log(event.target.innerHTML);
-    console.log(questionCounter);
     // If correct, append Correct text to bottom of list, else, append Wrong to bottom of list
-    if (event.target.innerHTML === answers.answerKey[questionCounter-1]) {
-        messageDiv.appendChild(correct);
-    } else {
-        messageDiv.appendChild(lose);
-    }
     document.getElementById("buttonList").appendChild(messageDiv);
     if (questionCounter < 5) {
+        if (event.target.innerHTML === answers.answerKey[questionCounter-1]) {
+            messageDiv.appendChild(correct);
+        } else {
+            messageDiv.appendChild(lose);
+            secondsLeft = decreaseTimer(secondsLeft);
+        }
         questionCounter = showQuestion(questionCounter);
     } else {
-        newWindow(timerInterval, secondsLeft);
+        secondsLeft = score(timerInterval, secondsLeft);
     }
-    // Remove messageDiv after 2 seconds
-    setTimeout(removeMessage, 2000);
+    // Remove messageDiv after 1 second
+    setTimeout(removeMessage, 1000);
+}
+
+// Reduce timer by 10 seconds if answer is incorrect
+function decreaseTimer(secondsLeft) {
+    secondsLeft -= 10;
+    console.log(secondsLeft);
+    return secondsLeft;
 }
 
 function removeMessage() {
-    document.getElementById("buttonList").removeChild(messageDiv);
+    // document.getElementById("buttonList").removeChild(messageDiv);
     messageDiv.innerHTML = "";
     return
 }
 
-function newWindow(timerInterval, secondsLeft) {
+function score(timerInterval, secondsLeft) {
     // Stops execution of action at set interval
     clearInterval(timerInterval);
+    console.log(secondsLeft);
     // Calls function to create and append image
     timerEl.textContent = " ";
-    window.open("https://mae2136.github.io/code-quiz/");
+    timerEl.style.display = "none"
+    mainHeaderDiv.textContent = "All Done!";
+    information.textContent = `Your final score is: ${secondsLeft}`;
+    answerListDisplay.style.display = "none";
+    // After final question, ask user to input initials
+    scoreText.style.display = "inline";
+    return secondsLeft;
 }
-// After final question, ask user to input initials
+
+// Home Page button leads back to main page
 // Open new page to display score
-// Store score and name in local storage
-// New page button leads back to main page
+// window.open("https://mae2136.github.io/code-quiz/");
