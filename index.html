@@ -30,11 +30,16 @@
             <li><button type="button" class="answer"></button></li>
         </ol>
     </div>
-    <form id="scoreText" style="display: none">
-        <label for="uName">Initials:</label>
-        <input type="text" id="initials" name="uName"></input>
+    <form id="scoreForm" style="display: none">
+        <label for="initials">Initials:</label>
+        <input type="text" id="initials" name="initials"></input>
         <input type="submit" value="Submit"></input>
     </form>
+    <div id="highScore" style="display: none">
+        <ul id="scoreList"></ul>
+        <button id="back">Go Back</button>
+        <button id="clear">Clear High Scores</button>
+    </div>
     <script src="./assets/js/script.js"></script>
 </body>
 

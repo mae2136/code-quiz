@@ -8,13 +8,20 @@ var timerEl = document.getElementById("timer");
 const messageDiv = document.createElement("div");
 const correct = document.createTextNode("Correct!");
 const lose = document.createTextNode("Wrong!");
-var scoreText = document.getElementById("scoreText");
-var storage = {
-    Initials: [],
-    Score: [],
-};
-
-localStorage.setItem("scoreHistory", JSON.stringify(storage));
+var scoreForm = document.getElementById("scoreForm");
+var highScoreEl = document.getElementById("highScore");
+var initials = document.getElementById("initials");
+var scoreList = document.getElementById("scoreList");
+console.log(initials.value);
+var scoreHistory = JSON.parse(window.localStorage.getItem(`scoreHistory`));
+if (scoreHistory !== null) {
+    console.log(`We did it!`)
+} else {
+    scoreHistory = {
+        name: [],
+        score: [],
+    };
+}
 
 // Array of Question Headers
 var questionHeader = ["Question 1", "Question 2", "Question 3", "Question 4", "Question 5"];
@@ -42,9 +49,17 @@ startButton.addEventListener("click", startQuiz);
 answerListDisplay.addEventListener("click", checkAnswer);
 
 // Store score and name in local storage
-scoreText.addEventListener("submit", function (event) {
+scoreForm.addEventListener("submit", function (event) {
     event.preventDefault();
-    console.log("Scored", event.target);
+    scoreHistory.name.push(initials.value);
+    scoreHistory.score.push(secondsLeft);
+    window.localStorage.setItem("scoreHistory", JSON.stringify(scoreHistory));
+    scoreForm.style.display = "none";
+    mainHeaderDiv.textContent = "High Scores";
+    information.textContent = "";
+    highScoreEl.style.display = "block";
+    // Calls function to create and append
+    renderScore();
 });
 
 // Starts quiz on start button click.
@@ -59,6 +74,7 @@ function startQuiz() {
     startTimer(secondsLeft);
 }
 
+// Starts timer
 function startTimer() {
     timerInterval = setInterval(function () {
         secondsLeft--;
@@ -142,30 +158,37 @@ function decreaseTimer(secondsLeft) {
     return secondsLeft;
 }
 
+// Removes right/wrong message
 function removeMessage() {
     // document.getElementById("buttonList").removeChild(messageDiv);
     messageDiv.innerHTML = "";
     return
 }
-
+// Clears timer, removes unneeded HTML, displays score storage
 function score(timerInterval, secondsLeft) {
     // Stops execution of action at set interval
     clearInterval(timerInterval);
     console.log(secondsLeft);
-    // Calls function to create and append image
     timerEl.textContent = " ";
     timerEl.style.display = "none"
     mainHeaderDiv.textContent = "All Done!";
     information.textContent = `Your final score is: ${secondsLeft}`;
     answerListDisplay.style.display = "none";
     // After final question, ask user to input initials
-    scoreText.style.display = "inline";
+    scoreForm.style.display = "inline";
     return secondsLeft;
 }
 
+// Display score from localstorage (append)
+function renderScore() {
+    console.log(`render`)
+    // Iterate over object to append list elements, currently broken
+    for (let i = 0; i < scoreHistory.length; i++) {
+        var li = document.createElement("li");
+        li.textContent = `Name: ${`scoreHistory.name[i]`}  Score: ${`scoreHistory.score[i]`}`;
+        li.appendChild(scoreList);
+    }
+}
+// window.localStorage.setItem("scoreHistory", JSON.stringify(storage));
 // Home Page button leads back to main page
-// Display score from localstorage
-// storage.Initials = JSON.parse(window.localStorage.getItem(`Initials`));
-// storage.Score = JSON.parse(window.localStorage.getItem(`Score`));
-
-// window.open("https://mae2136.github.io/code-quiz/");
+// window.open("https://mae2136.github.io/code-quiz/"); maybe refresh.
